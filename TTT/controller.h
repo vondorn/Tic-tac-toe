@@ -9,6 +9,8 @@ class controller {
 
   Toe press(float x, float y) { return m_->setT(x / 200, y / 200); }
   void clear() { m_->clear(); }
+  bool checkFull() { return m_->checkFull(); }
+  Toe computerMove() { return m_->computerMove(); }
 
  private:
   model* m_;

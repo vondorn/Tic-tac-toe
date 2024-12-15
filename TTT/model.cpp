@@ -5,7 +5,8 @@ Toe model::setT(int x, int y) {
     ts[y][x] = cur;
     cur = cur == Tac ? Tic : Tac;
     return winnerCheck();
-  }
+  } else
+    return Bad;
   return No;
 }
 
@@ -30,9 +31,29 @@ Toe model::winnerCheck() {
 }
 
 void model::clear() {
+  cur = Tac;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      ts[i][j] = 0;
+      ts[i][j] = No;
+    }
+  }
+}
+
+bool model::checkFull() {
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      if (!ts[i][j]) return 0;
+    }
+  }
+  return 1;
+}
+
+Toe model::computerMove() {
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      if (!ts[j][i]) {
+        return setT(i, j);
+      }
     }
   }
 }

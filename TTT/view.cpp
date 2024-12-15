@@ -2,15 +2,17 @@
 
 #include "./ui_view.h"
 
-View::View(QWidget* parent, controller* c)
-    : QWidget(parent), ui(new Ui::View), c_(c) {
+View::View(QWidget* parent, controller* c, bool mode)
+    : QWidget(parent), ui(new Ui::View), c_(c), computerMode(mode) {
   ui->setupUi(this);
+  newGame();
 }
 
 View::~View() { delete ui; }
 
 void View::paintEvent(QPaintEvent* event) {
   QPainter painter(this);
+  painter.fillRect(rect(), QBrush("#dee2e6"));
   int cellSize = size().height() / 3;
   Toe** ts = c_->getCells();
   qreal cornerRadius = 20;
@@ -48,19 +50,40 @@ void View::paintEvent(QPaintEvent* event) {
 
 void View::mousePressEvent(QMouseEvent* event) {
   win = c_->press(event->x(), event->y());
+  if (win == Bad) return;
   update();
-  if (win) exitBox();
+  winCheck();
+  if (computerMode && !win) {
+    qDebug() << "DD";
+    win = c_->computerMove();
+    winCheck();
+  }
+}
+
+void View::winCheck() {
+  if (win == Tic || win == Tac) {
+    win == player1 ? score.first++ : score.second++;
+    exitBox();
+    win = No;
+  } else if (c_->checkFull()) {
+    exitBox();
+  }
 }
 
 void View::exitBox() {
   QMessageBox box;
-  box.setText(win == Tic ? "Player 2 wins" : "Player 1 wins");
+  box.setText(
+      QString("Player 1: %1\tPlayer 2: %2").arg(score.first).arg(score.second));
+  QPushButton* newGameButton = new QPushButton("New Game");
   QPushButton* exitButton = new QPushButton("Exit");
-  connect(exitButton, &QPushButton::clicked, this, close());
+  connect(newGameButton, &QPushButton::clicked, this, &View::newGame);
+  connect(exitButton, &QPushButton::clicked, this, &View::hide);
+  box.addButton(newGameButton, QMessageBox::ActionRole);
   box.addButton(exitButton, QMessageBox::ActionRole);
   box.exec();
 }
 
 void View::newGame() {
-  
+  player1 = player1 == Tac ? Tic : Tac;
+  c_->clear();
 }
