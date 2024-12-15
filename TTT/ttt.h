@@ -26,16 +26,16 @@ class TTT : public QMainWindow {
   }
 
   void startPlay() {
-    model* m = new model();
+    model* m = new model(TWO);
     controller* c = new controller(m);
-    View* v = new View(this, c, 0);
+    View* v = new View(this, c);
     v->show();
   }
 
   void compPlay() {
-    model* m = new model();
+    model* m = new model(ONE);
     controller* c = new controller(m);
-    View* v = new View(this, c, 1);
+    View* v = new View(this, c);
     v->show();
   }
 

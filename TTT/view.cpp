@@ -2,8 +2,8 @@
 
 #include "./ui_view.h"
 
-View::View(QWidget* parent, controller* c, bool mode)
-    : QWidget(parent), ui(new Ui::View), c_(c), computerMode(mode) {
+View::View(QWidget* parent, controller* c)
+    : QWidget(parent), ui(new Ui::View), c_(c) {
   ui->setupUi(this);
   newGame();
 }
@@ -49,15 +49,15 @@ void View::paintEvent(QPaintEvent* event) {
 }
 
 void View::mousePressEvent(QMouseEvent* event) {
-  win = c_->press(event->x(), event->y());
-  if (win == Bad) return;
+  c_->press(event->x(), event->y());
+  // if (win == Bad) return;
   update();
-  winCheck();
-  if (computerMode && !win) {
-    qDebug() << "DD";
-    win = c_->computerMove();
-    winCheck();
-  }
+  // winCheck();
+  // if (computerMode && !win) {
+  //   qDebug() << "DD";
+  //   win = c_->computerMove();
+  //   winCheck();
+  // }
 }
 
 void View::winCheck() {
@@ -84,6 +84,6 @@ void View::exitBox() {
 }
 
 void View::newGame() {
-  player1 = player1 == Tac ? Tic : Tac;
+  // player1 = player1 == Tac ? Tic : Tac;
   c_->clear();
 }

@@ -20,7 +20,7 @@ class View : public QWidget {
   Q_OBJECT
 
  public:
-  View(QWidget *parent = nullptr, controller *c = nullptr, bool mode = 0);
+  View(QWidget *parent = nullptr, controller *c = nullptr);
   ~View();
 
   void paintEvent(QPaintEvent *event) override;
