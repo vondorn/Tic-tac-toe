@@ -21,16 +21,17 @@ class model {
   }
   Toe** getArray() { return ts; }
   void setT(int x, int y);
-  void winnerCheck();
+  Toe winnerCheck();
   void clear();
   bool checkFull();
   void computerMove();
   void doMove(int x, int y);
   bool isValid(int x, int y);
   Status getStatus() { return status; }
-  void updateScore();
+  void update();
   int getScore1() { return score1; }
   int getScore2() { return score2; }
+  Toe minimax(int x, int y);
 
  private:
   Toe** ts = {};
