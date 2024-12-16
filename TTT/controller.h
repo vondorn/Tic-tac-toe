@@ -10,7 +10,10 @@ class controller {
   void press(float x, float y) { m_->doMove(x / 200, y / 200); }
   void clear() { m_->clear(); }
   bool checkFull() { return m_->checkFull(); }
+  Status getStatus() { return m_->getStatus(); }
   // void computerMove() { m_->computerMove(); }
+  int getScore1() { return m_->getScore1(); }
+  int getScore2() { return m_->getScore2(); }
 
  private:
   model* m_;

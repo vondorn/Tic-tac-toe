@@ -1,8 +1,11 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include <qdebug.h>
+
 #include <array>
 #include <iostream>
+#include <vector>
 
 typedef enum { No, Tic, Tac, Bad } Toe;
 typedef enum { ONE, TWO } Mode;
@@ -24,6 +27,10 @@ class model {
   void computerMove();
   void doMove(int x, int y);
   bool isValid(int x, int y);
+  Status getStatus() { return status; }
+  void updateScore();
+  int getScore1() { return score1; }
+  int getScore2() { return score2; }
 
  private:
   Toe** ts = {};

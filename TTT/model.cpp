@@ -4,10 +4,8 @@ void model::setT(int x, int y) {
   if (isValid(x, y)) {
     ts[y][x] = !player ? player1 : player2;
     player = !player;
-    // return winnerCheck();
+    winnerCheck();
   }
-  // return Bad;
-  // return No;
 }
 
 void model::winnerCheck() {
@@ -28,14 +26,22 @@ void model::winnerCheck() {
     res = ts[1][1];
   }
   status = !res ? NOTHING : res == player1 ? WIN_FIRST : WIN_SECOND;
+  status = !status && checkFull() ? DRAW : status;
+  updateScore();
 }
 
 void model::clear() {
+  status = NOTHING;
   std::swap(player1, player2);
+  player = player1 == Tac ? 0 : 1;
+  qDebug() << player1 << "\t" << player2 << "\t\t" << player;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
       ts[i][j] = No;
     }
+  }
+  if (mode == ONE && player) {
+    computerMove();
   }
 }
 
@@ -49,25 +55,24 @@ bool model::checkFull() {
 }
 
 void model::computerMove() {
-  for (int i = 0; i < 3; ++i) {
-    for (int j = 0; j < 3; ++j) {
-      if (!ts[j][i]) {
-        setT(i, j);
-      }
-    }
-  }
+  int x, y;
+  do {
+    x = rand() % 3;
+    y = rand() % 3;
+  } while (!isValid(x, y));
+  setT(x, y);
 }
 
 void model::doMove(int x, int y) {
-  switch (mode) {
-    case ONE:
-      setT(x, y);
-      computerMove();
-    case TWO:
-      setT(x, y);
-      break;
+  setT(x, y);
+
+  if (mode == ONE && !status) {
+    computerMove();
   }
-  winnerCheck();
 }
 
 bool model::isValid(int x, int y) { return !ts[y][x]; }
+
+void model::updateScore() {
+  status == WIN_FIRST ? score1++ : status == WIN_SECOND ? score2++ : 0;
+}

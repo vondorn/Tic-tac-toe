@@ -52,7 +52,7 @@ void View::mousePressEvent(QMouseEvent* event) {
   c_->press(event->x(), event->y());
   // if (win == Bad) return;
   update();
-  // winCheck();
+  winCheck();
   // if (computerMode && !win) {
   //   qDebug() << "DD";
   //   win = c_->computerMove();
@@ -61,19 +61,23 @@ void View::mousePressEvent(QMouseEvent* event) {
 }
 
 void View::winCheck() {
-  if (win == Tic || win == Tac) {
-    win == player1 ? score.first++ : score.second++;
-    exitBox();
-    win = No;
-  } else if (c_->checkFull()) {
+  // if (win == Tic || win == Tac) {
+  //   win == player1 ? score.first++ : score.second++;
+  //   exitBox();
+  //   win = No;
+  // } else if (c_->checkFull()) {
+  //   exitBox();
+  // }
+  if (c_->getStatus()) {
     exitBox();
   }
 }
 
 void View::exitBox() {
   QMessageBox box;
-  box.setText(
-      QString("Player 1: %1\tPlayer 2: %2").arg(score.first).arg(score.second));
+  box.setText(QString("Player 1: %1\tPlayer 2: %2")
+                  .arg(c_->getScore1())
+                  .arg(c_->getScore2()));
   QPushButton* newGameButton = new QPushButton("New Game");
   QPushButton* exitButton = new QPushButton("Exit");
   connect(newGameButton, &QPushButton::clicked, this, &View::newGame);
