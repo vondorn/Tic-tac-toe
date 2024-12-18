@@ -75,9 +75,7 @@ void View::winCheck() {
 
 void View::exitBox() {
   QMessageBox box;
-  box.setText(QString("Player 1: %1\tPlayer 2: %2")
-                  .arg(c_->getScore1())
-                  .arg(c_->getScore2()));
+  box.setText(QString("Player 1: %1\tPlayer 2: %2").arg(c_->getScore1()).arg(c_->getScore2()));
   QPushButton* newGameButton = new QPushButton("New Game");
   QPushButton* exitButton = new QPushButton("Exit");
   connect(newGameButton, &QPushButton::clicked, this, &View::newGame);

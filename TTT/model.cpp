@@ -41,16 +41,18 @@ void model::clear() {
   }
 }
 
-bool model::checkFull() {
+bool model::checkFull(Field& f) {
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      if (!(*field)(i, j)) return 0;
+      if (!f(i, j)) return 0;
     }
   }
   return 1;
 }
 
-void model::computerMove() { AI(); }
+void model::computerMove() {
+  qDebug() << AI(-1, -1, *field, !player ? player1 : player2);
+}
 
 void model::doMove(int x, int y) {
   setT(x, y);
@@ -66,7 +68,7 @@ bool model::isValid(int x, int y) { return !(*field)(y, x); }
 void model::update() {
   Toe check = winnerCheck(*field);
   status = !check ? NOTHING : check == player1 ? WIN_FIRST : WIN_SECOND;
-  status = !status && checkFull() ? DRAW : status;
+  status = !status && checkFull(*field) ? DRAW : status;
   status == WIN_FIRST ? score1++ : status == WIN_SECOND ? score2++ : 0;
 }
 
@@ -78,25 +80,38 @@ Toe model::minimax(int x, int y) {
       }
     }
   }
-  return winnerCheck();
+  return winnerCheck(*field);
 }
 
 int model::AI(int x, int y, Field field, Toe toe) {
-  int res = 0;
-  field(x, y) = toe;
-  Status win = winnerCheck(field);
-  if (win == WIN_FIRST) {
+  int res = 0, min = INT32_MAX, temp = 0;
+  int xr = -1, yr = -1;
+  if (x != -1 && y != -1) {
+    field(x, y) = toe;
+  }
+  field.print();
+  Toe win = winnerCheck(field);
+  Status status;
+  status = !win ? NOTHING : win == player1 ? WIN_FIRST : WIN_SECOND;
+  status = !status && checkFull(field) ? DRAW : status;
+
+  if (status == WIN_FIRST) {
     return player ? 0 : 1;
-  } else if (win == WIN_SECOND) {
+  } else if (status == WIN_SECOND) {
     return player ? 1 : 0;
-  } else if (win == DRAW) {
+  } else if (status == DRAW) {
     return 0;
   }
   toe = toe == Tic ? Tac : Tic;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
       if (!field(i, j)) {
-        res += AI(j, i, field, toe);
+        temp += AI(i, j, field, toe);
+        if (temp < min) {
+          min = temp;
+          xr = j;
+          yr = i;
+        }
       }
     }
   }
