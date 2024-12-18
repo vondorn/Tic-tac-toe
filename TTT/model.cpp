@@ -2,27 +2,27 @@
 
 void model::setT(int x, int y) {
   if (isValid(x, y)) {
-    ts[y][x] = !player ? player1 : player2;
+    (*field)(y, x) = !player ? player1 : player2;
     player = !player;
   }
 }
 
-Toe model::winnerCheck() {
+Toe model::winnerCheck(Field& f) {
   Toe res = No;
   for (int i = 0; i < 3; ++i) {
-    if (ts[i][0] && ts[i][0] == ts[i][1] && ts[i][1] == ts[i][2]) {
-      res = ts[i][0];
+    if (f(i, 0) && f(i, 0) == f(i, 1) && f(i, 1) == f(i, 2)) {
+      res = f(i, 0);
     }
   }
   for (int j = 0; j < 3; ++j) {
-    if (ts[0][j] && ts[0][j] == ts[1][j] && ts[1][j] == ts[2][j]) {
-      res = ts[0][j];
+    if (f(0, j) && f(0, j) == f(1, j) && f(1, j) == f(2, j)) {
+      res = f(0, j);
     }
   }
-  if (((ts[0][0] == ts[1][1] && ts[1][1] == ts[2][2]) ||
-       (ts[0][2] == ts[1][1] && ts[1][1] == ts[2][0])) &&
-      ts[1][1] != No) {
-    res = ts[1][1];
+  if (((f(0, 0) == f(1, 1) && f(1, 1) == f(2, 2)) ||
+       (f(0, 2) == f(1, 1) && f(1, 1) == f(2, 0))) &&
+      f(1, 1) != No) {
+    res = f(1, 1);
   }
   return res;
 }
@@ -31,10 +31,9 @@ void model::clear() {
   status = NOTHING;
   std::swap(player1, player2);
   player = player1 == Tac ? 0 : 1;
-  qDebug() << player1 << "\t" << player2 << "\t\t" << player;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      ts[i][j] = No;
+      (*field)(i, j) = No;
     }
   }
   if (mode == ONE && player) {
@@ -45,26 +44,13 @@ void model::clear() {
 bool model::checkFull() {
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      if (!ts[i][j]) return 0;
+      if (!(*field)(i, j)) return 0;
     }
   }
   return 1;
 }
 
-void model::computerMove() {
-  Toe temp[3][3];
-  for (int i = 0; i < 3; ++i) {
-    for (int j = 0; j < 3; ++j) {
-      temp[i][j] = ts[i][j];
-    }
-  }
-
-  for (int i = 0; i < 3; ++i) {
-    for (int j = 0; j < 3; ++j) {
-      ts[i][j] = temp[i][j];
-    }
-  }
-}
+void model::computerMove() { AI(); }
 
 void model::doMove(int x, int y) {
   setT(x, y);
@@ -75,16 +61,16 @@ void model::doMove(int x, int y) {
   }
 }
 
-bool model::isValid(int x, int y) { return !ts[y][x]; }
+bool model::isValid(int x, int y) { return !(*field)(y, x); }
 
 void model::update() {
-  Toe check = winnerCheck();
+  Toe check = winnerCheck(*field);
   status = !check ? NOTHING : check == player1 ? WIN_FIRST : WIN_SECOND;
   status = !status && checkFull() ? DRAW : status;
   status == WIN_FIRST ? score1++ : status == WIN_SECOND ? score2++ : 0;
 }
 
-Toe minimax(int x, int y) {
+Toe model::minimax(int x, int y) {
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
       if (isValid(x, y)) {
@@ -93,4 +79,26 @@ Toe minimax(int x, int y) {
     }
   }
   return winnerCheck();
+}
+
+int model::AI(int x, int y, Field field, Toe toe) {
+  int res = 0;
+  field(x, y) = toe;
+  Status win = winnerCheck(field);
+  if (win == WIN_FIRST) {
+    return player ? 0 : 1;
+  } else if (win == WIN_SECOND) {
+    return player ? 1 : 0;
+  } else if (win == DRAW) {
+    return 0;
+  }
+  toe = toe == Tic ? Tac : Tic;
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      if (!field(i, j)) {
+        res += AI(j, i, field, toe);
+      }
+    }
+  }
+  return res;
 }

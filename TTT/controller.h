@@ -5,7 +5,7 @@
 class controller {
  public:
   controller(model* m) : m_(m) {}
-  Toe** getCells() { return m_->getArray(); }
+  Field getCells() { return m_->getField(); }
 
   void press(float x, float y) { m_->doMove(x / 200, y / 200); }
   void clear() { m_->clear(); }

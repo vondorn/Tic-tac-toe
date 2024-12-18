@@ -14,7 +14,7 @@ void View::paintEvent(QPaintEvent* event) {
   QPainter painter(this);
   painter.fillRect(rect(), QBrush("#dee2e6"));
   int cellSize = size().height() / 3;
-  Toe** ts = c_->getCells();
+  Field ts = c_->getCells();
   qreal cornerRadius = 20;
   painter.setPen(QPen(QBrush("#343a40"), 10));
   painter.drawLine(cellSize, 0, cellSize, cellSize * 3);
@@ -29,13 +29,13 @@ void View::paintEvent(QPaintEvent* event) {
       // QRect rect(j * cellSize, i * cellSize, cellSize, cellSize);
       // painter.drawRoundedRect(rect, cornerRadius, cornerRadius);
 
-      if (ts[i][j] == Tic) {
+      if (ts(i, j) == Tic) {
         painter.setBrush(Qt::NoBrush);  // Без заливки
         painter.setPen(
             QPen(QColor(0, 0, 255), 20));  // Синий цвет и ширина линии 10
         painter.drawEllipse(j * cellSize + 20, i * cellSize + 20,
                             cellSize / 1.25f, cellSize / 1.25f);
-      } else if (ts[i][j] == Tac) {
+      } else if (ts(i, j) == Tac) {
         painter.setPen(QPen(QColor(255, 0, 0), 20));
         painter.drawLine(
             j * cellSize + cellSize / 8, i * cellSize + cellSize / 8,
